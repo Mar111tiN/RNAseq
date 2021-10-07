@@ -50,5 +50,5 @@ rule all:
         ),
         "results/counts/all.tsv",
         # get_final_output(),
-        "results/qc/multiqc_report.html",
+        # "results/qc/multiqc_report.html",
         "results/qc/fastQC.html"

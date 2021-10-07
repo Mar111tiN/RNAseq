@@ -1,0 +1,73 @@
+{
+  "__default__": {
+    "t": "00:45",
+    "mem": "2000",
+    "nodes": 1,
+    "partition": "debug",
+    "threads": "{threads}",
+    "name": "{rule}:{wildcards.sample}_{wildcards.unit}"
+  },
+  "star_index": {
+    "t": "01:15",
+    "mem": 3000,
+    "partition": "short",
+    "name": "{rule}"
+  },
+  "star_align": {
+    "t": "1:10",
+    "mem": 3000
+  },
+  "count_matrix": {
+    "t": "00:15",
+    "mem": 1000,
+    "name": "{rule}"
+  },
+  "fastqc": {
+    "t": "00:45",
+    "mem": 1500
+  },
+  "fastq_multiQC": {
+    "t": "00:45",
+    "mem": 1500,
+    "name": "{rule}"
+  },
+  "rseqc_gtf2db": {
+    "t": "00:50",
+    "name": "{rule}"
+  },
+  "rseqc_gtfdb2bed": {
+    "t": "01:45",
+    "partition": "short",
+    "name": "{rule}"
+  },
+  "rseqc_junction_annotation": {
+    "t": "00:45"
+  },
+  "rseqc_junction_saturation": {
+    "t": "00:45"
+  },
+  "rseqc_stat": {
+    "t": "00:10",
+    "mem": 1500
+  },
+  "rseqc_infer": {
+    "t": "00:45",
+    "mem": 1500
+  },
+  "rseqc_innerdis": {
+    "t": "00:45"
+  },
+  "rseqc_readdis": {
+    "t": "00:45"
+  },
+  "rseqc_readdup": {
+    "t": "00:08"
+  },
+  "rseqc_readgc": {
+    "t": "00:05"
+  },
+  "multiqc": {
+    "t": "00:15",
+    "mem": 1500
+  }
+}
