@@ -11,7 +11,7 @@ dependencies:
   - ca-certificates=2021.5.30
   - htslib=1.13
   - krb5=1.19.2
-  - libcurl=7.79.0
+  - libcurl=7.79.1
   - libdeflate=1.7
   - libedit=3.1.20191231
   - libev=4.33
@@ -20,6 +20,7 @@ dependencies:
   - libnghttp2=1.43.0
   - libssh2=1.10.0
   - libstdcxx-ng=11.2.0
+  - libzlib=1.2.11
   - ncurses=6.2
   - openssl=1.1.1l
   - samtools=1.13

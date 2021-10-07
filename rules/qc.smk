@@ -10,11 +10,12 @@ rule fastqc:
     conda:
         f"../envs/fastQC-env.yml"
     params:
+        limits_file = f"--limits {os.path.join(snakedir, config['fastqc']['config'])} " if "config" in config['fastqc'] else "",
         name1 = lambda w, output: os.path.basename(output.fastqc1).replace("_fastqc.zip", ""),
         name2 = lambda w, output: os.path.basename(output.fastqc2).replace("_fastqc.zip", "")
     shell:
-        "zcat {input.fq1} | fastqc stdin:{params.name1} -o results/qc/fastqc/ && "  # &>{log} "    
-        "zcat {input.fq2} | fastqc stdin:{params.name2} -o results/qc/fastqc/"  # &>{log} " 
+        "zcat {input.fq1} | fastqc stdin:{params.name1} {params.limits_file}-o results/qc/fastqc/ && "  # &>{log} "    
+        "zcat {input.fq2} | fastqc stdin:{params.name2} {params.limits_file}-o results/qc/fastqc/"  # &>{log} " 
 
 
 def get_fastqc_list(_):
