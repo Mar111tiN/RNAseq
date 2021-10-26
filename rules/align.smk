@@ -25,7 +25,7 @@ rule star_index:
         
 rule star_align:
     input:
-        unpack(get_fq),
+        unpack(get_star_fastq),
         index=star_index(),
         gtf=get_gtf()
     output:

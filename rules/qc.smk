@@ -1,9 +1,9 @@
 ## fastqc
 rule fastqc:
-    input: unpack(get_fq)
+    input: unpack(get_fastq)
     output:
-        fastqc1 = "results/qc/fastqc/{sample}_{unit}_1_fastqc.zip",
-        fastqc2 = "results/qc/fastqc/{sample}_{unit}_2_fastqc.zip"
+        fastqc1 = "results/qc/fastqc/{trim}/{sample}_{unit}_1_fastqc.zip",
+        fastqc2 = "results/qc/fastqc/{trim}/{sample}_{unit}_2_fastqc.zip"
     threads: 4
     log:
         "logs/fastqc/{sample}_{unit}.log"
@@ -14,17 +14,19 @@ rule fastqc:
         name1 = lambda w, output: os.path.basename(output.fastqc1).replace("_fastqc.zip", ""),
         name2 = lambda w, output: os.path.basename(output.fastqc2).replace("_fastqc.zip", "")
     shell:
-        "zcat {input.fq1} | fastqc stdin:{params.name1} {params.limits_file}-o results/qc/fastqc/ && "  # &>{log} "    
-        "zcat {input.fq2} | fastqc stdin:{params.name2} {params.limits_file}-o results/qc/fastqc/"  # &>{log} " 
+        "zcat {input.fastq1} | fastqc stdin:{params.name1} {params.limits_file}-o results/qc/fastqc/ && "  # &>{log} "    
+        "zcat {input.fastq2} | fastqc stdin:{params.name2} {params.limits_file}-o results/qc/fastqc/"  # &>{log} " 
 
 
 def get_fastqc_list(_):
     '''
     returns the complete list of required fastqc files depending on trim option
     '''
-
+    
     # create file list from the included_files tuple list
-    fastqc_list = [f"results/qc/fastqc/{s}_{u}_{r}_fastqc.zip" for s in units['sample_name'] for u in units['unit_name'] for r in [1,2]]
+    fastqc_list = [f"results/qc/fastqc/raw/{s}_{u}_{r}_fastqc.zip" for s in units['sample_name'] for u in units['unit_name'] for r in [1,2]]
+    if config["trimming"]["activate"]:
+        fastqc_list += [f"results/qc/fastqc/trimmed/{s}_{u}_{r}_fastqc.zip" for s in units['sample_name'] for u in units['unit_name'] for r in [1,2]]
     return fastqc_list
 
 

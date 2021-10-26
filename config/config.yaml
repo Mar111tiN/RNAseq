@@ -11,8 +11,8 @@ length: 150
 ref:
     static_path: /fast/groups/ag_schmueck/work/ref
     species: homo_sapiens
-    build: hg38
-    release: 104
+    build: hg19
+    release: 87
     hg19:
         genome: genome/hg19_ens104_primary_assembly.fa
         genome_split: genome/split
@@ -27,6 +27,7 @@ ref:
         rseqc_folder: annotation/rseqc
 trimming:
     activate: False
+    adapter: AAGCAGTGGTATCAACGCAGAGTAC                # adapter from SMARTer II kit
 
 fastqc:
     config: config/tools/fastqc_limits.txt            # path to config file relative to Snakefolder

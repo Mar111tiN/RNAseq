@@ -19,17 +19,8 @@ samples, units = get_sample_dfs(
     )
 
 
-# load the sample independent config file
+# load the sample independent config file if things get more complex
 # config = add_config(config, config_name="general")
-
-# how does the report work?
-# report: "report/workflow.rst"
-
-
-##### setup singularity #####
-# this container defines the underlying OS for each job when using the workflow
-# with --use-conda --use-singularity
-# container: "docker://continuumio/miniconda3"
 
 
 ##### load rules #####
@@ -50,5 +41,5 @@ rule all:
         ),
         "results/counts/all.tsv",
         # get_final_output(),
-        # "results/qc/multiqc_report.html",
+        "results/qc/multiqc_report.html",
         "results/qc/fastQC.html"
