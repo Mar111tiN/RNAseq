@@ -27,8 +27,12 @@ ref:
         rseqc_folder: annotation/rseqc
 trimming:
     activate: False
-    adapter: AAGCAGTGGTATCAACGCAGAGTAC                # adapter from SMARTer II kit
-
+    adapters:
+        5prime:             # -g/-G option
+            - AGATCGGAAGAGCACACGT               # adapter from SMARTer II kit
+        3prime:             # -a/-A option
+            - AGAGCACACGTCTGAACTCCAGTCAC
+    threads: 8
 fastqc:
     config: config/tools/fastqc_limits.txt            # path to config file relative to Snakefolder
 pca:
@@ -36,7 +40,6 @@ pca:
     labels:
         # columns of sample sheet to use for PCA
         - condition
-
 diffexp:
     # contrasts for the deseq2 results method
     contrasts:

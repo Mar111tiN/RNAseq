@@ -1,3 +1,18 @@
+def get_adapters(w):
+    '''
+    create the trimming params
+    '''
+
+    is_PE = units[]
+    ac = config['trimming']['adapters']
+    adapter_list = [f" -g {a}" for a in ac["5prime"]] + [f"-a {a}" for a in ac["3prime"]]
+    if is_paired_end(w.sample):
+        adapter_list += [f" -G {a}" for a in ac["5prime"]] + [f"-A {a}" for a in ac["3prime"]]
+    adapter_string = " ".join(adapter_list) + " "
+
+    return adapter_string
+
+
 rule cutadapt_pe:
     input:
         get_raw_fastq
@@ -8,11 +23,13 @@ rule cutadapt_pe:
     log:
         "logs/cutadapt/{sample}-{unit}.log",
     params:
-        others=config["params"]["cutadapt-pe"],
-        adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
-    threads: 8
-    wrapper:
-        "0.77.0/bio/cutadapt/pe"
+        adapters=get_adapters
+    threads: 
+        config['trimming']['threads']
+    conda:
+        "../envs/cut-env.yml"
+    shell:
+        "cutadapt -j {threads} {params.adapters} -o {output.fastq1} -p {output.fastq2} {input}"
 
 
 rule cutadapt_se:
@@ -24,8 +41,10 @@ rule cutadapt_se:
     log:
         "logs/cutadapt/{sample}-{unit}.log",
     params:
-        others=config["params"]["cutadapt-se"],
-        adapters_r1=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
-    threads: 8
-    wrapper:
-        "0.77.0/bio/cutadapt/se"
+        adapters=get_adapters
+    threads: 
+        config['trimming']['threads']
+    conda:
+        "../envs/cut-env.yml"
+    shell:
+        "cutadapt -j {threads} {params.adapters} -o {output.fastq1} {input}"
