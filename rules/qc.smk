@@ -1,55 +1,41 @@
-## fastqc
 rule fastqc:
-    input: unpack(get_fastq)
-    output:
-        fastqc1 = "results/qc/fastqc/{trim}/{sample}_{unit}_1_fastqc.zip",
-        fastqc2 = "results/qc/fastqc/{trim}/{sample}_{unit}_2_fastqc.zip"
-    threads: 4
+    input: 
+        fastq = get_qc_fastq
+    output: 
+        fastqc = "qc/fastqc/{sample}-{unit}{read}_{trim}_fastqc.zip"
+    threads: 2
     log:
-        "logs/fastqc/{sample}_{unit}.log"
+        "logs/fastqc/{sample}_{unit}_{trim}{read}.log"
     conda:
-        f"../envs/fastQC-env.yml"
+        "../envs/fastQC-env.yml"
     params:
         limits_file = f"--limits {os.path.join(snakedir, config['fastqc']['config'])} " if "config" in config['fastqc'] else "",
-        name1 = lambda w, output: os.path.basename(output.fastqc1).replace("_fastqc.zip", ""),
-        name2 = lambda w, output: os.path.basename(output.fastqc2).replace("_fastqc.zip", "")
+        name = lambda w, output: os.path.basename(output.fastqc).replace("_fastqc.zip", "")
     shell:
-        "zcat {input.fastq1} | fastqc stdin:{params.name1} {params.limits_file}-o results/qc/fastqc/ && "  # &>{log} "    
-        "zcat {input.fastq2} | fastqc stdin:{params.name2} {params.limits_file}-o results/qc/fastqc/"  # &>{log} " 
-
-
-def get_fastqc_list(_):
-    '''
-    returns the complete list of required fastqc files depending on trim option
-    '''
-    
-    # create file list from the included_files tuple list
-    fastqc_list = [f"results/qc/fastqc/raw/{s}_{u}_{r}_fastqc.zip" for s in units['sample_name'] for u in units['unit_name'] for r in [1,2]]
-    if config["trimming"]["activate"]:
-        fastqc_list += [f"results/qc/fastqc/trimmed/{s}_{u}_{r}_fastqc.zip" for s in units['sample_name'] for u in units['unit_name'] for r in [1,2]]
-    return fastqc_list
+        "zcat {input.fastq} | fastqc stdin:{params.name} {params.limits_file}-o qc/fastqc/ "  # &>{log} "    
 
 
 rule fastq_multiQC:
     input:
         get_fastqc_list
     output:
-        "results/qc/fastQC.html"
+        "qc/fastQC.html"
     threads: 2
     conda:
         f"../envs/fastQC-env.yml"
     shell:
-        "multiqc -f -o results/qc/ -n fastQC --interactive results/qc/fastqc/; "  # interactive for big number of files
-        "rm -f results/qc/fastqc/*_fastqc.html results/qc/fastq/*.sub"  # leave the zip files for accumulated multiQC of all processed samples
+        "multiqc -f -o qc/ -n fastQC --interactive qc/fastqc/; "  # interactive for big number of files
+        "rm -f qc/fastqc/*_fastqc.html qc/fastq/*.sub"  # leave the zip files for accumulated multiQC of all processed samples
+
 
 ## RSEQC
 rule rseqc_gtf2db:
-    input:
-        get_gtf(),
     output:
         db=rseqc_gene_model("db"),
     log:
         "logs/rseqc_gtf2db.log",
+    params:
+        gtf = get_gtf()
     conda:
         "../envs/gffutils.yaml"
     script:
@@ -74,7 +60,7 @@ rule rseqc_junction_annotation:
         bam="results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
         bed=rseqc_gene_model(),
     output:
-        "results/qc/rseqc/{sample}-{unit}.junctionanno.junction.bed",
+        "qc/rseqc/{sample}-{unit}.junctionanno.junction.bed",
     priority: 1
     log:
         "logs/rseqc/rseqc_junction_annotation/{sample}-{unit}.log",
@@ -93,7 +79,7 @@ rule rseqc_junction_saturation:
         bam="results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
         bed=rseqc_gene_model(),
     output:
-        "results/qc/rseqc/{sample}-{unit}.junctionsat.junctionSaturation_plot.pdf",
+        "qc/rseqc/{sample}-{unit}.junctionsat.junctionSaturation_plot.pdf",
     priority: 1
     log:
         "logs/rseqc/rseqc_junction_saturation/{sample}-{unit}.log",
@@ -111,7 +97,7 @@ rule rseqc_stat:
     input:
         "results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
     output:
-        "results/qc/rseqc/{sample}-{unit}.stats.txt",
+        "qc/rseqc/{sample}-{unit}.stats.txt",
     priority: 1
     log:
         "logs/rseqc/rseqc_stat/{sample}-{unit}.log",
@@ -126,7 +112,7 @@ rule rseqc_infer:
         bam="results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
         bed=rseqc_gene_model(),
     output:
-        "results/qc/rseqc/{sample}-{unit}.infer_experiment.txt",
+        "qc/rseqc/{sample}-{unit}.infer_experiment.txt",
     priority: 1
     log:
         "logs/rseqc/rseqc_infer/{sample}-{unit}.log",
@@ -141,7 +127,7 @@ rule rseqc_innerdis:
         bam="results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
         bed=rseqc_gene_model(),
     output:
-        "results/qc/rseqc/{sample}-{unit}.inner_distance_freq.inner_distance.txt",
+        "qc/rseqc/{sample}-{unit}.inner_distance_freq.inner_distance.txt",
     priority: 1
     log:
         "logs/rseqc/rseqc_innerdis/{sample}-{unit}.log",
@@ -158,7 +144,7 @@ rule rseqc_readdis:
         bam="results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
         bed=rseqc_gene_model(),
     output:
-        "results/qc/rseqc/{sample}-{unit}.readdistribution.txt",
+        "qc/rseqc/{sample}-{unit}.readdistribution.txt",
     priority: 1
     log:
         "logs/rseqc/rseqc_readdis/{sample}-{unit}.log",
@@ -172,7 +158,7 @@ rule rseqc_readdup:
     input:
         "results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
     output:
-        "results/qc/rseqc/{sample}-{unit}.readdup.DupRate_plot.pdf",
+        "qc/rseqc/{sample}-{unit}.readdup.DupRate_plot.pdf",
     priority: 1
     log:
         "logs/rseqc/rseqc_readdup/{sample}-{unit}.log",
@@ -188,7 +174,7 @@ rule rseqc_readgc:
     input:
         "results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
     output:
-        "results/qc/rseqc/{sample}-{unit}.readgc.GC_plot.pdf",
+        "qc/rseqc/{sample}-{unit}.readgc.GC_plot.pdf",
     priority: 1
     log:
         "logs/rseqc/rseqc_readgc/{sample}-{unit}.log",
@@ -207,35 +193,35 @@ rule multiqc:
             unit=units.itertuples(),
         ),
         expand(
-            "results/qc/rseqc/{unit.sample_name}-{unit.unit_name}.junctionanno.junction.bed",
+            "qc/rseqc/{unit.sample_name}-{unit.unit_name}.junctionanno.junction.bed",
             unit=units.itertuples(),
         ),
         expand(
-            "results/qc/rseqc/{unit.sample_name}-{unit.unit_name}.junctionsat.junctionSaturation_plot.pdf",
+            "qc/rseqc/{unit.sample_name}-{unit.unit_name}.junctionsat.junctionSaturation_plot.pdf",
             unit=units.itertuples(),
         ),
         expand(
-            "results/qc/rseqc/{unit.sample_name}-{unit.unit_name}.infer_experiment.txt",
+            "qc/rseqc/{unit.sample_name}-{unit.unit_name}.infer_experiment.txt",
             unit=units.itertuples(),
         ),
         expand(
-            "results/qc/rseqc/{unit.sample_name}-{unit.unit_name}.stats.txt",
+            "qc/rseqc/{unit.sample_name}-{unit.unit_name}.stats.txt",
             unit=units.itertuples(),
         ),
         expand(
-            "results/qc/rseqc/{unit.sample_name}-{unit.unit_name}.inner_distance_freq.inner_distance.txt",
+            "qc/rseqc/{unit.sample_name}-{unit.unit_name}.inner_distance_freq.inner_distance.txt",
             unit=units.itertuples(),
         ),
         expand(
-            "results/qc/rseqc/{unit.sample_name}-{unit.unit_name}.readdistribution.txt",
+            "qc/rseqc/{unit.sample_name}-{unit.unit_name}.readdistribution.txt",
             unit=units.itertuples(),
         ),
         expand(
-            "results/qc/rseqc/{unit.sample_name}-{unit.unit_name}.readdup.DupRate_plot.pdf",
+            "qc/rseqc/{unit.sample_name}-{unit.unit_name}.readdup.DupRate_plot.pdf",
             unit=units.itertuples(),
         ),
         expand(
-            "results/qc/rseqc/{unit.sample_name}-{unit.unit_name}.readgc.GC_plot.pdf",
+            "qc/rseqc/{unit.sample_name}-{unit.unit_name}.readgc.GC_plot.pdf",
             unit=units.itertuples(),
         ),
         expand(
@@ -243,7 +229,7 @@ rule multiqc:
             unit=units.itertuples(),
         ),
     output:
-        "results/qc/multiqc_report.html",
+        "qc/multiqc_report.html",
     log:
         "logs/multiqc.log",
     wrapper:

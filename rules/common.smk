@@ -106,6 +106,8 @@ def get_cutadapt_input(wildcards):
         )
 
 
+############## fastq ###############
+
 def get_raw_fastq(w):
 
     fastq_path = config['input_dir']
@@ -115,33 +117,79 @@ def get_raw_fastq(w):
     if u['fastq2']:
     # PE case
         return {
-            "fastq1": f"{os.path.join(fastq_path, u.fastq1)}", 
-            "fastq2": f"{os.path.join(fastq_path, u.fastq2)}"}
+            "fastq1": os.path.join(fastq_path, u.fastq1), 
+            "fastq2": os.path.join(fastq_path, u.fastq2)
+            }
     # SE case
-    return {"fastq1": f"{os.path.join(fastq_path, u.fastq1)}"}
+    return {"fastq1": os.path.join(fastq_path, u.fastq1)}
 
 
+def get_trim_fastq(w):
+    # get the respective entry from the units_df (use tuple indexing for dual row index)
+    unit = units.loc[(w.sample, w.unit), :]
+
+    if unit['fastq2']:
+    # PE case
+        return {f"fastq{read}": f"results/trimmed/{w.sample}-{w.unit}_R{read}.fastq.gz" for read in [1, 2]}
+    # SE case
+    return {f"fastq1": f"results/trimmed/{w.sample}-{w.unit}.fastq.gz"}
+
+
+############ STAR ###########################
 
 def get_star_fastq(w):
     '''
     returns the trimmed/untrimmed mates/single fastq depending on config and existence of second fastq in units_df
     '''
 
-    # get the respective entry from the units_df (use tuple indexing for dual row index)
-    unit = units.loc[(w.sample, w.unit), :]
-
     # trimming is active
     if config['trimming']['activate']:
         # activated trimming, use trimmed data
-        if unit['fastq2']:
-        # PE case
-            return {f"fastq1": f"results/trimmed/{w.sample}-{w.unit}_R{read}.fastq.gz" for read in ["1", "2"]}
-        # SE case
-        return {f"fastq1": f"results/trimmed/{w.sample}-{w.unit}.fastq.gz"}
 
-    # trimming is inactive --> get org fastqs from units_df    
+        return get_trim_fastq(w)
+
+    # trimming is inactive --> get org fastqs from units_df  
     return get_raw_fastq(w)
 
 
+############# fastQC ########################
 
-#    def get_all_fastq
+def get_fastqc_list(_):
+    '''
+    returns the complete list of required fastqc files depending on trim option
+    '''
+    
+    # create file list from the included_files tuple list
+    fastqc_folder = "qc/fastqc"
+    types = ["raw"]
+    # add the trim folder prefix if trimming is active
+    if config['trimming']['activate']:
+        types.append("trim")
+    reads = ["R1", "R2"]
+    # create SE marker for single read units
+    units['SE'] = units['fastq2'].isna() | (units['fastq2'] == "")
+
+    PE_list = [os.path.join(fastqc_folder, f"{u[0]}-{u[1]}_{read}_{t}_fastqc.zip") for u in units[~units['SE']].index for t in types for read in reads]
+    SE_list = [os.path.join(fastqc_folder, f"{u[0]}-{u[1]}_{t}_fastqc.zip") for u in units[units['SE']].index for t in types]
+
+    return SE_list + PE_list
+
+
+def get_qc_fastq(w):
+    '''
+    returns the trimmed/untrimmed mates/single fastq depending on trim wildcard and existence of second fastq in units_df
+    '''
+
+    # trimmed fastq as input
+    if w.trim == "trim":
+        # is SE or PE (read can be "" for SE
+        return f"results/trimmed/{w.sample}-{w.unit}{w.read}.fastq.gz"
+    # is raw fastq --> get fastq path from 
+    fastq_path = config['input_dir']
+    # no trimming, use raw reads
+    u = units.loc[(w.sample, w.unit), :]
+    # is read2
+    if w.read == "_R2":
+        return os.path.join(fastq_path, u.fastq2)
+    # raw fastq as input
+    return os.path.join(fastq_path, u.fastq1)

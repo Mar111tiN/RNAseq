@@ -15,10 +15,10 @@ def get_adapters(w):
     adapt3 = ac["3prime"]
     if (a:=u['adapters3']):
         adapt3.append(a)
-    adapter_list = [f" -g {a}" for a in adapt5] + [f"-a {a}" for a in adapt3]
+    adapter_list = [f"-g {a}" for a in adapt5] + [f"-a {a}" for a in adapt3]
     # check for PE
     if u["fastq2"]:
-        adapter_list += [f" -G {a}" for a in adapt5] + [f"-A {a}" for a in adapt3]
+        adapter_list += [f"-G {a}" for a in adapt5] + [f"-A {a}" for a in adapt3]
     adapter_string = " ".join(adapter_list) + " "
 
     return adapter_string

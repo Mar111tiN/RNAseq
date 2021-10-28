@@ -21,15 +21,20 @@ samples, units = get_sample_dfs(
 
 # load the sample independent config file if things get more complex
 # config = add_config(config, config_name="general")
-
+wildcard_constraints:
+    # eg sample cannot contain _ or / to prevent ambiguous wildcards
+    sample = "[^_/.]+",
+    unit = "[^_/.]+",
+    read = "[^/.]*",
+    trim = "trim|raw"
 
 ##### load rules #####
-# include: "rules/qc.smk"
+include: "rules/qc.smk"
 include: "rules/align.smk"
 include: "rules/trim.smk"
 
 rule all:
     input:
         "results/counts/all.tsv",
-        # "results/qc/multiqc_report.html",
-        # "results/qc/fastQC.html"
+        # "qc/multiqc_report.html",
+         "qc/fastQC.html"

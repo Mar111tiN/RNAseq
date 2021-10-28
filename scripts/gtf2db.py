@@ -1,7 +1,7 @@
 import gffutils
 
 db = gffutils.create_db(
-    snakemake.input[0],
+    snakemake.params.gtf,
     dbfn=snakemake.output.db,
     force=True,
     keep_order=True,

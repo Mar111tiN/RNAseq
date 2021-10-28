@@ -5,7 +5,17 @@
     "nodes": 1,
     "partition": "debug",
     "threads": "{threads}",
-    "name": "{rule}:{wildcards.sample}_{wildcards.unit}"
+    "name": "{rule}:{wildcards.sample}-{wildcards.unit}"
+  },
+  "cutadapt_PE": {
+    "t": "00:15",
+    "mem": 2000,
+    "name": "{rule}"
+  },
+  "cutadapt_SE": {
+    "t": "00:07",
+    "mem": 2000,
+    "name": "{rule}"
   },
   "star_index": {
     "t": "01:15",
@@ -23,8 +33,9 @@
     "name": "{rule}"
   },
   "fastqc": {
-    "t": "00:45",
-    "mem": 1500
+    "t": "00:15",
+    "mem": 1500,
+    "name": "{rule}:{wildcards.sample}-{wildcards.unit}_{wildcards.trim}{wildcards.read}"
   },
   "fastq_multiQC": {
     "t": "00:45",
