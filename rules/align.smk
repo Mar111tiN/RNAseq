@@ -1,7 +1,6 @@
 rule star_index:
     input:
         fasta=full_path("genome"),
-        gtf=get_gtf(),
     output:
         directory(star_index()),
     threads: 8
@@ -19,15 +18,15 @@ rule star_index:
         "--genomeDir {output} "
         "--genomeFastaFiles {input.fasta} "
         "--sjdbOverhang {params.overhang} "
-        "--sjdbGTFfile {input.gtf} "
+        "--sjdbGTFfile {params.gtf} "
         "--outStd Log "
         "&> {log}"
-        
+
+
 rule star_align:
     input:
         unpack(get_star_fastq),
         index=star_index(),
-        gtf=get_gtf()
     output:
         bam = "results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
         tab = "results/star/{sample}-{unit}/ReadsPerGene.out.tab",
@@ -35,6 +34,8 @@ rule star_align:
         "logs/star/{sample}-{unit}.log",
     params:
         outprefix = lambda wc, output: os.path.dirname(output.bam) + "/",
+        fastqs = lambda w, input: f"{input.fastq1} {input.fastq2}" if hasattr(input, "fastq2") else input.fastq1,
+        gtf = get_gtf()
     threads: 24
     conda:
         "../envs/star.yml"
@@ -42,11 +43,29 @@ rule star_align:
         "STAR --runThreadN {threads} "
         "--genomeDir {input.index} "
         "--readFilesCommand zcat "
-        "--readFilesIn {input.fq1} {input.fq2} "
+        "--readFilesIn {params.fastqs} "
         "--outSAMtype BAM SortedByCoordinate "
         "--quantMode GeneCounts "
-        "--sjdbGTFfile {input.gtf} "
+        "--sjdbGTFfile {params.gtf} "
         "--outFileNamePrefix {params.outprefix} "
         "--outStd Log "
         "&> {log}; "
         "samtools index {output.bam}"
+
+
+rule count_matrix:
+    input:
+        expand(
+            "results/star/{unit.sample_name}-{unit.unit_name}/ReadsPerGene.out.tab",
+            unit=units.itertuples(),
+        ),
+    output:
+        "results/counts/all.tsv",
+    log:
+        "logs/count-matrix.log",
+    params:
+        samples=units["sample_name"].tolist()
+    conda:
+        "../envs/pandas.yaml"
+    script:
+        "../scripts/count-matrix.py"

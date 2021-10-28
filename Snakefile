@@ -24,22 +24,12 @@ samples, units = get_sample_dfs(
 
 
 ##### load rules #####
-
-
-# include: "rules/trim.smk"
-include: "rules/qc.smk"
+# include: "rules/qc.smk"
 include: "rules/align.smk"
-include: "rules/diffexp.smk"
-
+include: "rules/trim.smk"
 
 rule all:
     input:
-        expand(
-            "results/star/{sample}-{unit}/ReadsPerGene.out.tab", 
-            sample=units['sample_name'], 
-            unit=units['unit_name']
-        ),
         "results/counts/all.tsv",
-        # get_final_output(),
-        "results/qc/multiqc_report.html",
-        "results/qc/fastQC.html"
+        # "results/qc/multiqc_report.html",
+        # "results/qc/fastQC.html"

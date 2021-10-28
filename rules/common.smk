@@ -28,10 +28,13 @@ def get_sample_dfs(sample_sheet=".", unit_sheet="."):
         pd.read_csv(unit_sheet, sep="\t", dtype={"sample_name": str, "unit_name": str})
         .set_index(["sample_name", "unit_name"], drop=False)
         .sort_index()
+        # fillna for easy checking of adapters in get_adapters
+        .fillna("")
     )
 
     # validate(units, schema="../schemas/units.schema.yaml")
     return (samples, units)
+
 
 def static_path():
     cr = config['ref']
@@ -103,52 +106,42 @@ def get_cutadapt_input(wildcards):
         )
 
 
-def is_paired_end(sample):
-    sample_units = units.loc[sample]
-    fq2_null = sample_units["fastq2"].isnull()
-    paired = ~fq2_null
-    all_paired = paired.all()
-    all_single = (~paired).all()
-    assert (
-        all_single or all_paired
-    ), "invalid units for sample {}, must be all paired end or all single end".format(
-        sample
-    )
-    return all_paired
-
-
-fastq_path = config['input_dir']
-
 def get_raw_fastq(w):
-    # no trimming, use raw reads
-    u = units.loc[(w.sample, w.unit), ["fastq1", "fastq2"]].dropna()
 
-    if not is_paired_end(wildcards.sample):
-        return {"fastq1": f"{u.fq1}"}
-    else:
+    fastq_path = config['input_dir']
+    # no trimming, use raw reads
+    u = units.loc[(w.sample, w.unit), :]
+
+    if u['fastq2']:
+    # PE case
         return {
             "fastq1": f"{os.path.join(fastq_path, u.fastq1)}", 
             "fastq2": f"{os.path.join(fastq_path, u.fastq2)}"}
+    # SE case
+    return {"fastq1": f"{os.path.join(fastq_path, u.fastq1)}"}
+
 
 
 def get_star_fastq(w):
-    if w.trim == "trimmed":
-        # activated trimming, use trimmed data
-        if is_paired_end(w.sample):
-            # paired-end sample
-            return dict(
-                zip(
-                    ["fastq1", "fastq2"],
-                    expand(
-                        "results/trimmed/{sample}_{unit}_{read}.fastq.gz",
-                        read=["R1", "R2"],
-                        **w,
-                    ),
-                )
-            )
-        # single end sample
-        return {"fastq1": "trimmed/{sample}_{unit}.fastq.gz".format(**w)}
-    else:
-        return get_raw_fastq(w)
+    '''
+    returns the trimmed/untrimmed mates/single fastq depending on config and existence of second fastq in units_df
+    '''
 
-def get_all_fastq
+    # get the respective entry from the units_df (use tuple indexing for dual row index)
+    unit = units.loc[(w.sample, w.unit), :]
+
+    # trimming is active
+    if config['trimming']['activate']:
+        # activated trimming, use trimmed data
+        if unit['fastq2']:
+        # PE case
+            return {f"fastq1": f"results/trimmed/{w.sample}-{w.unit}_R{read}.fastq.gz" for read in ["1", "2"]}
+        # SE case
+        return {f"fastq1": f"results/trimmed/{w.sample}-{w.unit}.fastq.gz"}
+
+    # trimming is inactive --> get org fastqs from units_df    
+    return get_raw_fastq(w)
+
+
+
+#    def get_all_fastq
