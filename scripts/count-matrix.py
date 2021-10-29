@@ -1,7 +1,7 @@
 import sys
 
 # logging
-sys.stderr = open(s.log[0], "w")
+sys.stderr = open(snakemake.log[0], "w")
 
 import pandas as pd
 
@@ -22,3 +22,6 @@ def get_matrix(s):
     # collapse technical replicates
     matrix = matrix.groupby(matrix.columns, axis=1).sum()
     matrix.to_csv(s.output[0], sep="\t")
+
+
+get_matrix(snakemake)

@@ -5,7 +5,7 @@ samples: sheets/rnaPol_samples.tsv
 # path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
 # Units are technical replicates (e.g. lanes, or resequencing of the same biological
 # sample).
-units: sheets/test_units.csv
+units: sheets/rnaPol_units.csv
 length: 150
 #### REF SECTION ###############
 ref:

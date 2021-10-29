@@ -29,13 +29,14 @@ rule star_align:
         index=star_index(),
     output:
         bam = "results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
-        tab = "results/star/{sample}-{unit}/ReadsPerGene.out.tab",
+        tab = "results/counts/{sample}-{unit}_ReadsPerGene.out.tab",
     log:
         "logs/star/{sample}-{unit}.log",
     params:
         outprefix = lambda wc, output: os.path.dirname(output.bam) + "/",
         fastqs = lambda w, input: f"{input.fastq1} {input.fastq2}" if hasattr(input, "fastq2") else input.fastq1,
-        gtf = get_gtf()
+        gtf = get_gtf(),
+        tab = lambda w, output: output.bam.replace("Aligned.sortedByCoord.out.bam", "ReadsPerGene.out.tab")
     threads: 24
     conda:
         "../envs/star.yml"
@@ -50,13 +51,14 @@ rule star_align:
         "--outFileNamePrefix {params.outprefix} "
         "--outStd Log "
         "&> {log}; "
-        "samtools index {output.bam}"
+        "samtools index {output.bam}; "
+        "mv {params.tab} {output.tab}"
 
 
 rule count_matrix:
     input:
         expand(
-            "results/star/{unit.sample_name}-{unit.unit_name}/ReadsPerGene.out.tab",
+            "results/counts/{unit.sample_name}-{unit.unit_name}_ReadsPerGene.out.tab",
             unit=units.itertuples(),
         ),
     output:
