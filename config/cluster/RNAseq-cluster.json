@@ -8,14 +8,12 @@
     "name": "{rule}:{wildcards.sample}-{wildcards.unit}"
   },
   "cutadapt_PE": {
-    "t": "00:15",
-    "mem": 2000,
-    "name": "{rule}"
+    "t": "00:20",
+    "mem": 2000
   },
   "cutadapt_SE": {
-    "t": "00:07",
-    "mem": 2000,
-    "name": "{rule}"
+    "t": "00:10",
+    "mem": 2000
   },
   "star_index": {
     "t": "01:15",

@@ -2,7 +2,7 @@ from yaml import CLoader as Loader, load, dump
 from subprocess import run
 
 ##### setup report #####
-configfile: "config/config.yaml"
+configfile: "config/config_Lilas.yaml"
 # set the workdir
 workdir: config['work_dir']
 snakedir = os.path.dirname(workflow.snakefile)
@@ -36,5 +36,5 @@ include: "rules/trim.smk"
 rule all:
     input:
         "results/counts/all.tsv",
-        # "qc/multiqc_report.html",
-         "qc/fastQC.html"
+        "qc/multiqc_report.html",
+        "qc/fastQC.html"
