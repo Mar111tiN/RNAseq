@@ -62,6 +62,7 @@ rule rseqc_junction_annotation:
     output:
         "qc/rseqc/{sample}-{unit}.junctionanno.junction.bed",
     priority: 1
+    threads: 2
     log:
         "logs/rseqc/rseqc_junction_annotation/{sample}-{unit}.log",
     params:
@@ -160,6 +161,7 @@ rule rseqc_readdup:
     output:
         "qc/rseqc/{sample}-{unit}.readdup.DupRate_plot.pdf",
     priority: 1
+    threads: 2
     log:
         "logs/rseqc/rseqc_readdup/{sample}-{unit}.log",
     params:

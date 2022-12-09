@@ -1,7 +1,7 @@
 {
   "__default__": {
     "t": "00:45",
-    "mem": "2000",
+    "mem": "3000",
     "nodes": 1,
     "partition": "debug",
     "threads": "{threads}",
@@ -70,7 +70,8 @@
     "t": "00:45"
   },
   "rseqc_readdup": {
-    "t": "00:08"
+    "t": "00:08",
+    "mem": "4000"
   },
   "rseqc_readgc": {
     "t": "00:05"
