@@ -23,11 +23,13 @@
   },
   "star_align": {
     "t": "2:30:00",
-    "mem": 3000
+    "mem": 3000,
+    "partition": "short"
   },
   "rsem": {
     "t": "2:30:00",
-    "mem": 3000
+    "mem": 3000,
+    "partion": "short"
   },
   "count_matrix": {
     "t": "00:15:00",
