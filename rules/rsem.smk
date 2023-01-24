@@ -2,7 +2,7 @@ rule rsem:
     input:
         tbam = "results/star/{sample}-{unit}/Aligned.toTranscriptome.out.bam"
     output:
-        genes = "results/RSEM/{sample}-{unit}.genes.results"
+        genes = "results/RSEM/{sample}-{unit}.genes.results",
         isoforms = "results/RSEM/{sample}-{unit}.isoforms.results"
     params:
         rsem_ref = full_path('rsem_ref')

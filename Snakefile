@@ -32,6 +32,7 @@ wildcard_constraints:
 include: "rules/qc.smk"
 include: "rules/align.smk"
 include: "rules/trim.smk"
+include: "rules/rsem.smk"
 
 rule all:
     input:
