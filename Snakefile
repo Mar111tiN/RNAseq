@@ -36,5 +36,5 @@ include: "rules/trim.smk"
 rule all:
     input:
         "results/counts/all.tsv",
-        "qc/multiqc_report.html",
+        # "qc/multiqc_report.html",
         "qc/fastQC.html"

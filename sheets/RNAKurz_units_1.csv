@@ -1,0 +1,2 @@
+sample_name	unit_name	fastq1	fastq2	adapters3	adapters5
+WT1	1	P1715_RNA_01_WT-1_S1_L001_R1_001.fastq.gz	P1715_RNA_01_WT-1_S1_L001_R2_001.fastq.gz		

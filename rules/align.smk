@@ -29,6 +29,7 @@ rule star_align:
         index=star_index(),
     output:
         bam = "results/star/{sample}-{unit}/Aligned.sortedByCoord.out.bam",
+        tbam = "results/star/{sample}-{unit}/Aligned.toTranscriptome.out.bam",
         tab = "results/counts/{sample}-{unit}_ReadsPerGene.out.tab",
     log:
         "logs/star/{sample}-{unit}.log",
@@ -46,12 +47,20 @@ rule star_align:
         "--readFilesCommand zcat "
         "--readFilesIn {params.fastqs} "
         "--outSAMtype BAM SortedByCoordinate "
-        "--quantMode GeneCounts "
+        "--quantMode GeneCounts TranscriptomeSAM "
         "--sjdbGTFfile {params.gtf} "
+	"--outSAMunmapped Within "
+	"--outFilterType BySJout "
+	"--outSAMattributes NH HI AS NM MD "
+	"--alignIntronMin 20 "
+	"--alignIntronMax 1000000 "
+	"--alignMatesGapMax 1000000 "
+	"--alignSJoverhangMin 8 "
+	"--alignSJDBoverhangMin 1 " 
         "--outFileNamePrefix {params.outprefix} "
-        "--outStd Log "
-        "&> {log}; "
-        "samtools index {output.bam}; "
+        "--outStd Log && "
+        "samtools index {output.bam} && "
+        # "samtools index {output.tbam} && " # samtools cannot index on transcript coords
         "mv {params.tab} {output.tab}"
 
 

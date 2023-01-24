@@ -28,8 +28,6 @@ export LOGDIR=${HOME}/scratch/slogs/${SLURM_JOB_NAME}-${SLURM_JOB_ID}
 export TMPDIR=/fast/users/${USER}/scratch/tmp;
 mkdir -p $LOGDIR;
 
-unset DRMAA_LIBRARY_PATH
-
 # make conda available
 eval "$($(which conda) shell.bash hook)"
 # activate snakemake env
@@ -39,10 +37,10 @@ echo $CONDA_PREFIX "activated";
 set -x;
 
 # !!! leading white space is important
-DRMAA=" -p {cluster.partition} -t {cluster.t} --mem-per-cpu={cluster.mem} -J {cluster.name} --nodes={cluster.nodes} -n {cluster.threads}";
-DRMAA="$DRMAA -o ${LOGDIR}/{rule}-%j.log";
+SLURM_CLUSTER="sbatch -p {cluster.partition} -t {cluster.t} --mem-per-cpu={cluster.mem} -J {cluster.name} --nodes={cluster.nodes} -n {cluster.threads}";
+SLURM_CLUSTER="$SLURM_CLUSTER -o ${LOGDIR}/{rule}-%j.log"
 snakemake --unlock --rerun-incomplete;
 snakemake --dag | awk '$0 ~ "digraph" {p=1} p' | dot -Tsvg > dax/dag.svg;
-snakemake --use-conda --rerun-incomplete --cluster-config config/cluster/RNAseq-cluster.json --drmaa "$DRMAA" -prk -j 1000;
+snakemake --use-conda --rerun-incomplete --cluster-config config/cluster/RNAseq-cluster.json --cluster "$SLURM_CLUSTER" -prk -j 1000;
 # -k ..keep going if job fails
 # -p ..print out shell commands

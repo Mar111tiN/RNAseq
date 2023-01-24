@@ -1,11 +1,11 @@
 input_dir: /data/gpfs-1/users/szyskam_c/work/downloads/RNAseq_Kurz/fastq
 work_dir: /fast/users/szyskam_c/scratch/projects/RNAseqLilas
 # path or URL to sample sheet (TSV format, columns: sample, condition, ...)
-samples: sheets/RNAKurz_samples.csv
+samples: sheets/RNAKurz_samples_1.csv
 # path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
 # Units are technical replicates (e.g. lanes, or resequencing of the same biological
 # sample).
-units: sheets/RNAKurz_units.csv
+units: sheets/RNAKurz_units_1.csv
 length: 150
 #### REF SECTION ###############
 ref:
