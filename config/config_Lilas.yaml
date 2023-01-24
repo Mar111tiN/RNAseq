@@ -25,6 +25,7 @@ ref:
         gtf_path: annotation
         index_folder: star_index
         rseqc_folder: annotation/rseqc
+        rsem_ref: RSEM_ref/RSEM_ref
 trimming:
     activate: True
     adapters:

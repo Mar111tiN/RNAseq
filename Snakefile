@@ -37,4 +37,5 @@ rule all:
     input:
         "results/counts/all.tsv",
         # "qc/multiqc_report.html",
-        "qc/fastQC.html"
+        "qc/fastQC.html",
+        expand("results/RSEM/{unit.sample_name}-{unit.unit_name}.genes.results",unit=units.itertuples()) 
