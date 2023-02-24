@@ -27,9 +27,9 @@
     "partition": "short"
   },
   "rsem": {
-    "t": "2:30:00",
+    "t": "3:45:00",
     "mem": 3000,
-    "partion": "short"
+    "partition": "short"
   },
   "count_matrix": {
     "t": "00:15:00",

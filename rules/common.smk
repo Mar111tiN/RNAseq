@@ -56,7 +56,7 @@ def get_gtf():
     cr = config['ref']
     build = config['ref']['build']
     release = config['ref']['release']
-    gtf_file = f"{build}_ens{release}.chr.gtf"
+    gtf_file = f"{build}_{release}.chr.gtf"
     gtf_folder = os.path.join(static_path(), config['ref'][build]['gtf_path'])
     return os.path.join(gtf_folder, gtf_file)
     
@@ -66,8 +66,8 @@ def star_index():
     build = config['ref']['build']
     release = config['ref']['release'] 
 
-    index_main_folder = os.path.join(static_path(), config['ref'][build]['index_folder'])
-    star_folder = f"{build}_ens{release}"
+    index_main_folder = os.path.join(static_path(), config['ref'][build]['STARindex_folder'])
+    star_folder = f"{build}_{release}"
     
     return os.path.join(index_main_folder, star_folder)
 

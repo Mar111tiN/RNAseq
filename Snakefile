@@ -2,7 +2,7 @@ from yaml import CLoader as Loader, load, dump
 from subprocess import run
 
 ##### setup report #####
-configfile: "config/config_Lilas.yaml"
+configfile: "config/config_sarah.yml"
 # set the workdir
 workdir: config['work_dir']
 snakedir = os.path.dirname(workflow.snakefile)
@@ -36,7 +36,8 @@ include: "rules/rsem.smk"
 
 rule all:
     input:
-        "results/counts/all.tsv",
-        # "qc/multiqc_report.html",
-        "qc/fastQC.html",
-        expand("results/RSEM/{unit.sample_name}-{unit.unit_name}.genes.results",unit=units.itertuples()) 
+        "/fast/groups/ag_schmueck/work/ref/hg38/star_index/hg38_ens104CX"   # ,
+        # "results/counts/all.tsv",
+        # # "qc/multiqc_report.html",
+        # "qc/fastQC.html",
+        # expand("results/RSEM/{unit.sample_name}-{unit.unit_name}.genes.results",unit=units.itertuples()) 

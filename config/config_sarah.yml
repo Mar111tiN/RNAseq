@@ -1,31 +1,31 @@
-input_dir: /data/gpfs-1/users/szyskam_c/work/downloads/RNAseq_Kurz/fastq
-work_dir: /fast/users/szyskam_c/scratch/projects/RNAseqLilas
+input_dir: /fast/groups/ag_schmueck/work/NGSData/Illumina/230124_SS_RNAseq/fastq
+work_dir: /fast/users/szyskam_c/scratch/projects/RNAseqSarah
 # path or URL to sample sheet (TSV format, columns: sample, condition, ...)
-samples: sheets/RNAKurz_samples.csv
+samples: sheets/RNASarah_samples.csv
 # path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
 # Units are technical replicates (e.g. lanes, or resequencing of the same biological
 # sample).
-units: sheets/RNAKurz_units.csv
-length: 150
+units: sheets/RNASarah_units.csv
+length: 75
 #### REF SECTION ###############
 ref:
     static_path: /fast/groups/ag_schmueck/work/ref
     species: homo_sapiens
     build: hg38
-    release: ens104
+    release: ens104CX
     hg19:
         genome: genome/hg19_ens104_primary_assembly.fa
         genome_split: genome/split
         gtf_path: annotation
-        index_folder: star_index
-        rseqc_folder: annotation/rseqc
+        index_folder: star_indexCX
+        rseqc_folder: annotation/rseqcCX
     hg38:
         genome: genome/hg38.fasta
         genome_split: genome/split
         gtf_path: annotation
-        index_folder: star_index
-        rseqc_folder: annotation/rseqc
-        rsem_ref: RSEM_ref/RSEM_ref
+        STARindex_folder: star_index
+        rseqc_folder: annotation/rseqcCX
+        rsem_ref: RSEM_refCX/RSEM_refCX
 trimming:
     activate: True
     adapters:

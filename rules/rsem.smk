@@ -6,7 +6,7 @@ rule rsem:
         isoforms = "results/RSEM/{sample}-{unit}.isoforms.results"
     params:
         rsem_ref = full_path('rsem_ref')
-    threads: 8
+    threads: 16
     conda:
         "../envs/RSEM-env.yml"
     shell:
