@@ -1,11 +1,11 @@
 input_dir: /fast/groups/ag_schmueck/work/NGSData/Illumina/230124_SS_RNAseq/fastq
 work_dir: /fast/users/szyskam_c/scratch/projects/RNAseqSarah
 # path or URL to sample sheet (TSV format, columns: sample, condition, ...)
-samples: sheets/RNASarah_samples.csv
+samples: sheets/Sarah_samples.csv
 # path or URL to sequencing unit sheet (TSV format, columns: sample, unit, fq1, fq2)
 # Units are technical replicates (e.g. lanes, or resequencing of the same biological
 # sample).
-units: sheets/RNASarah_units.csv
+units: sheets/Sarah_units.csv
 length: 75
 #### REF SECTION ###############
 ref:

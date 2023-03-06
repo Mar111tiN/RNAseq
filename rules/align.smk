@@ -62,21 +62,3 @@ rule star_align:
         "samtools index {output.bam} && "
         # "samtools index {output.tbam} && " # samtools cannot index on transcript coords
         "mv {params.tab} {output.tab}"
-
-
-rule count_matrix:
-    input:
-        expand(
-            "results/counts/{unit.sample_name}-{unit.unit_name}_ReadsPerGene.out.tab",
-            unit=units.itertuples(),
-        ),
-    output:
-        "results/counts/all.tsv",
-    log:
-        "logs/count-matrix.log",
-    params:
-        samples=units["sample_name"].tolist()
-    conda:
-        "../envs/pandas.yaml"
-    script:
-        "../scripts/count-matrix.py"

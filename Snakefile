@@ -33,11 +33,13 @@ include: "rules/qc.smk"
 include: "rules/align.smk"
 include: "rules/trim.smk"
 include: "rules/rsem.smk"
+include: "rules/combine.smk"
 
 rule all:
     input:
-        "/fast/groups/ag_schmueck/work/ref/hg38/star_index/hg38_ens104CX"   # ,
-        # "results/counts/all.tsv",
-        # # "qc/multiqc_report.html",
-        # "qc/fastQC.html",
-        # expand("results/RSEM/{unit.sample_name}-{unit.unit_name}.genes.results",unit=units.itertuples()) 
+        "/fast/groups/ag_schmueck/work/ref/hg38/star_index/hg38_ens104CX", 
+        "results/combined/RSEM_TPM.tsv",
+        "results/combined/STAR_counts.tsv",
+        # "qc/multiqc_report.html",
+        "qc/fastQC.html",
+        expand("results/RSEM/{unit.sample_name}-{unit.unit_name}.genes.results",unit=units.itertuples()) 
